@@ -1,5 +1,8 @@
 class ApplicationController < Sinatra::Base
   set :default_content_type, 'application/json'
+  #folder for storing images
+  set :public_folder, 'app/public'
+  set :image_dir, File.join(settings.public_folder, 'images')
   
   # Add your routes here
   get "/" do
@@ -30,35 +33,64 @@ class ApplicationController < Sinatra::Base
   end
 
   # post author 
-  post "/authors/" do
-  end
+  # post "/authors/" do
+  # end
   # post blog
   post "/blogs" do
-    blog= Blog.create(
-    category: params[:category],
-    title: params[:title],
-    content: params[:content],
-    photographer: params[:photographer],
-    caption: params[:caption],
-    tag: params[:tag],
-    language: params[:language],
-    author_id: params[:author_id],
-    user_id: params[:user_id]
-    )
+    #creates image url and pushes the image to images folder
+    #checks if image is uploaded 
+      if params[:image]
+        filename = params[:image][:filename]
+        tempfile = params[:image][:tempfile]
+        FileUtils.copy(tempfile, File.join(settings.image_dir, filename))
+        new_image="/images/#{filename}"
+        {status: "ok", url: new_image}.to_json
+      
+          #if there is image it posts 
+        blog= Blog.create(
+        category: params[:category],
+        title: params[:title],
+        content: params[:content],
+        photographer: params[:photographer],
+        caption: params[:caption],
+        tag: params[:tag],
+        language: params[:language],
+        author_id: params[:author_id],
+        user_id: params[:user_id],
+        image: new_image,
+        )
+        blog.to_json
+    else
+      {status: "error", message: "no file"}
+    end
   end
+
   patch "/blogs/:id" do
     blog = Blog.find(params[:id])
-    blog.update(
-      category: params[:category],
-      title: params[:title],
-      content: params[:content],
-      photographer: params[:photographer],
-      caption: params[:caption],
-      tag: params[:tag],
-      language: params[:language],
-      author_id: params[:author_id],
-      user_id: params[:user_id]
-      )
+    if params[:image]
+        filename = params[:image][:filename]
+        tempfile = params[:image][:tempfile]
+        FileUtils.copy(tempfile, File.join(settings.image_dir, filename))
+        new_image="/images/#{filename}"
+        {status: "ok", url: new_image}.to_json
+      
+          #if there is image it updates 
+        blog= Blog.update(
+        category: params[:category],
+        title: params[:title],
+        content: params[:content],
+        photographer: params[:photographer],
+        caption: params[:caption],
+        tag: params[:tag],
+        language: params[:language],
+        author_id: params[:author_id],
+        user_id: params[:user_id],
+        image: new_image,
+        )
+        blog.to_json
+    else
+      {status: "error", message: "no file"}
+    end
     end
 
     # delete blog 
