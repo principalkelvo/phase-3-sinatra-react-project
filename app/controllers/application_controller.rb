@@ -49,7 +49,7 @@ class ApplicationController < Sinatra::Base
         filename = params[:image][:filename]
         tempfile = params[:image][:tempfile]
         FileUtils.copy(tempfile, File.join(settings.image_dir, filename))
-        new_image="/images/#{filename}"
+        new_image="http://localhost:9292/images/#{filename}"
         {status: "ok", url: new_image}.to_json
       
           #if there is image it posts 
@@ -77,9 +77,8 @@ class ApplicationController < Sinatra::Base
         filename = params[:image][:filename]
         tempfile = params[:image][:tempfile]
         FileUtils.copy(tempfile, File.join(settings.image_dir, filename))
-        new_image="/images/#{filename}"
+        new_image="http://localhost:9292/images/#{filename}"
         {status: "ok", url: new_image}.to_json
-      
           #if there is image it updates 
         blog= Blog.update(
         category: params[:category],
