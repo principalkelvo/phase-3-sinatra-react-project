@@ -32,6 +32,12 @@ class ApplicationController < Sinatra::Base
     author.to_json(include: :blogs)
   end
 
+  # get blogs by categories
+  get "/blogs/category/:category" do
+    blog = Blog.where("category = ?", params[:category])
+    blog.to_json(include: :author)
+  end
+
   # post author 
   # post "/authors/" do
   # end
