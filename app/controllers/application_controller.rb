@@ -10,8 +10,8 @@ class ApplicationController < Sinatra::Base
   end
   # get all blogs
   get "/blogs" do
-    blog= Blog.all
-    blog.to_json
+    blog= Blog.all.sort_by_date
+    blog.to_json(include: :author)
   end
 
   #get a blog

@@ -2,9 +2,7 @@ class Blog < ActiveRecord::Base
     belongs_to :user
     belongs_to :author
 
-    def self.author
-        id= self.author_id
-        author= Author.find(id)
-        author
-      end
+   def self.sort_by_date
+    self.order(:created_at)
+   end
 end
