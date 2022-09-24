@@ -32,10 +32,28 @@ class ApplicationController < Sinatra::Base
     author.to_json(include: :blogs)
   end
 
-  # get blogs by categories
-  get "/blogs/category/:category" do
-    blog = Blog.where("category = ?", params[:category])
-    blog.to_json(include: :author)
+  # get all categories
+  get "/categories" do
+    category = Category.unique_categories
+    category.to_json
+  end
+
+  # get each category 
+  get "/categories/:category" do
+    category = Category.where("name = ?", params[:category])
+    category.to_json(include: :blogs)
+  end
+
+  # get all comments of a blog 
+  get "/comments" do
+    comments= Comment.all
+    comments.to_json(include: :user)
+  end
+
+  # get all users 
+  get "/users" do
+    users= User.all
+    users.to_json(include: :comments)
   end
 
   # post author 
@@ -104,4 +122,6 @@ class ApplicationController < Sinatra::Base
       blog.destroy
       blog.to_json
     end
+
+  
 end
