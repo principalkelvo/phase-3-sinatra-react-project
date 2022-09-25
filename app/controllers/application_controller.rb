@@ -3,7 +3,9 @@ class ApplicationController < Sinatra::Base
   #folder for storing images
   set :public_folder, 'app/public'
   set :image_dir, File.join(settings.public_folder, 'images')
-  
+ 
+  #GETS
+
   # Add your routes here
   get "/" do
     { message: "Good luck with your project!" }.to_json
@@ -32,16 +34,16 @@ class ApplicationController < Sinatra::Base
     author.to_json(include: :blogs)
   end
 
-  # get all categories
+  # get all categories must be unique
   get "/categories" do
     category = Category.unique_categories
-    category.to_json
+    category.to_json(include: :blogs)
   end
 
-  # get each category 
+  # get each category by category name because category are unique
   get "/categories/:category" do
-    category = Category.where("name = ?", params[:category])
-    category.to_json(include: :blogs)
+    category = Category.find_by(name: params[:category])
+    category.to_json(include: { blogs: { include: :author } })
   end
 
   # get all comments of a blog 
@@ -56,9 +58,8 @@ class ApplicationController < Sinatra::Base
     users.to_json(include: :comments)
   end
 
-  # post author 
-  # post "/authors/" do
-  # end
+  #POSTS
+
   # post blog
   post "/blogs" do
     #creates image url and pushes the image to images folder
@@ -89,6 +90,20 @@ class ApplicationController < Sinatra::Base
     end
   end
 
+    #post a comment
+    post "/comments" do
+      comments= Comment.create(
+        comment: params[:comment],
+        like: params[:like],
+        view: params[:view],
+        user_id: params[:user_id],
+        blog_id: params[:blog_id]
+      )
+      comments.to_json(include: :user)
+    end
+
+    #UPDATE
+
   patch "/blogs/:id" do
     blog = Blog.find(params[:id])
     if params[:image]
@@ -116,11 +131,31 @@ class ApplicationController < Sinatra::Base
     end
     end
 
+#update comments
+patch "/comments/:id" do
+  comment = Comment.find(params[:id])
+  comment= Comment.update(
+        comment: params[:comment],
+        like: params[:like],
+        view: params[:view],
+        user_id: params[:user_id],
+        blog_id: params[:blog_id]
+      )
+      comment.to_json(include: :user)
+    end
+
     # delete blog 
     delete "/blogs/:id" do
       blog = Blog.find(params[:id])
       blog.destroy
       blog.to_json
+    end
+
+    # delete comment
+    delete "/comments/:id" do
+      comment = Comment.find(params[:id])
+      comment.destroy
+      comment.to_json
     end
 
   
