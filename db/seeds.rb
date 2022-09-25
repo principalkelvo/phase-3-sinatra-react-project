@@ -22,7 +22,7 @@ end
 # Seed your database here
 # create categories
 categories_names.each do |category|
-    category=Category.create(name: categories_names.sample )
+    category=Category.create(name: category)
 #create users
 user=User.create(name: Faker::Name.unique.name)
 
