@@ -1,5 +1,5 @@
 puts "🌱 Seeding spices..."
-# blogs = ["Croissant", "Rhubarb Pie", "Black and White Cookie", "Scone", "Banana Bread"]
+categories_names = ["News", "Sports","Business","Life","Travel","Entertainment","Tech"]
 
 # t.string :category
 # t.string :title
@@ -16,13 +16,17 @@ puts "🌱 Seeding spices..."
 #       t.boolean :like
 #       t.integer :view
 
-5.times do
+80.times do
     Author.create(name: Faker::Name.unique.name)
 end
 # Seed your database here
+# create categories
+categories_names.each do |category|
+    category=Category.create(name: categories_names.sample )
+#create users
+user=User.create(name: Faker::Name.unique.name)
+
 Author.all.each do |author|
-    category = Category.create(name: Faker::Book.genre )
-    user=User.create(name: Faker::Name.unique.name)
 
     blog = Blog.create(title: Faker::Lorem.sentence, category_id: category.id ,content: Faker::Lorem.paragraphs(number: rand(5..18)).join("\n"), photographer: Faker::Name.unique.name, image: Faker::LoremFlickr.image, caption: Faker::Lorem.sentence, tag: Faker::Hobby.activity,language: "english",author_id: author.id, user_id: user.id)
 
@@ -32,6 +36,7 @@ Author.all.each do |author|
         Comment.create(comment: Faker::Lorem.sentence, like: false, view: 1, user_id: random_user.id, blog_id: blog.id)
     end
 
+end
 end
 
 puts "✅ Done seeding!"
