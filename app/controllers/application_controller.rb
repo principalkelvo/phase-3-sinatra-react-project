@@ -13,13 +13,13 @@ class ApplicationController < Sinatra::Base
   # get all blogs
   get "/blogs" do
     blog= Blog.all.sort_by_date
-    blog.to_json(include: :author)
+    blog.to_json(include: [:author, comments: { include: :user } ])
   end
 
   #get a blog
   get "/blogs/:id" do
     blog = Blog.find(params[:id])
-    blog.to_json(include: :author)
+    blog.to_json(include: [:author, :comments, :users])
   end
 
   #get authors
